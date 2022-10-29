@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <fstream>
-using namespace std;
 
 #include <TF1.h>
 #include <TH1.h>
@@ -10,6 +9,8 @@ using namespace std;
 #include <TMath.h>
 #include <TCanvas.h>
 #include <TString.h>
+
+using namespace std;
 
 void rootfuncgenerate(Int_t nEvents, Int_t nTracks, Double_t v2) {
 
