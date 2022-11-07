@@ -17,7 +17,7 @@ using namespace std;
 void rootfuncgenerate(Int_t nEvents, Int_t nTracks, Double_t sigmaTracks, Double_t V2, Double_t sigmaV2) {
 
 // Introducing the TRandom class
-TRandom* random = new TRandom(0);
+	TRandom* random = new TRandom(0);
 
 // Creating a canvas and generating the the histogram and v2 function we want.
 	TCanvas* c1 = new TCanvas("c1", "v2 canvas", 900, 600);
