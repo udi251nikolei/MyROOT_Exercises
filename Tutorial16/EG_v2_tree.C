@@ -10,23 +10,20 @@ using namespace std;
 #include <TMath.h>
 #include <TCanvas.h>
 #include <TString.h>
-#include <TString.h>
 #include <TRandom.h>
 
 #include "MyClasses.C"
 
-void rootfuncgenerate(Int_t nEvents, Double_t sigmaTracks, Double_t sigmaV2) {
+void rootfuncgenerate(Int_t nEvents, Int_t nTracks, Double_t sigmaTracks, Double_t V2, Double_t sigmaV2) {
 
-// Generating a random value for v2
-  TRandom* random = new TRandom(0);
-  Double_t v2 = random->Rndm();
-  cout<< "v2 = " << v2 << endl;
+// Introducing the TRandom class
+TRandom* random = new TRandom(0);
 
 // Creating a canvas and generating the the histogram and v2 function we want.
 	TCanvas* c1 = new TCanvas("c1", "v2 canvas", 900, 600);
 	TH1D* hPhi = new TH1D("hPhi", "ROOT func generated phi distribution; phi; Counts", 100, 0, 2*TMath::Pi());
 	TF1* v2Func = new TF1("v2Func", "1 + 2*[0]*cos(2*x)", 0, 2*TMath::Pi());
-		v2Func->SetParameter(0, v2);
+	TF1* fitFunc = new TF1("fitFunc", "[1]*(2*[0]*cos(2*(x)) + 1)", 0, 2*TMath::Pi());
 
 // Create the outfile and data structure before the loop
 	TFile* file = new TFile("phi_dist.root", "RECREATE");
@@ -39,8 +36,18 @@ void rootfuncgenerate(Int_t nEvents, Double_t sigmaTracks, Double_t sigmaV2) {
 
 	// Generating nTracks of random phi angles and filling the array for each loop
 	for (Int_t e = 0; e < nEvents; e++) {
-		// Generating randoms number for nTracks for each events
-		Int_t nTracks = random->Rndm()*100;
+		// Generating a random value for v2 based on a gaussian distribution
+		Double_t v2 = random->Gaus(V2, sigmaV2);
+		//cout<< "v2 = " << v2 << endl;
+		v2Func->SetParameter(0, v2);
+		fitFunc->SetParameter(0, v2);
+		
+		// Generating random number for nTracks based on a uniform distribution for each event
+		Double_t Tmax = nTracks + sigmaTracks;
+		Double_t Tmin = nTracks - sigmaTracks;
+		Int_t nTracks = random->Uniform(Tmin, Tmax);
+		//cout<< "For event no. " << e << " the number of tracks is "<< nTracks << endl;
+
 		Double_t phi[nTracks];
 
 		// In the generate loop: for each event set nTracks and fV2
@@ -53,18 +60,21 @@ void rootfuncgenerate(Int_t nEvents, Double_t sigmaTracks, Double_t sigmaV2) {
 			// In the track loop: for each track
 			MyTrack* track = new((*trackArray)[nT]) MyTrack();
   			nT++;
-  			track->fPhi = phi[t];
+			track->fPhi = phi[t];
 
-    		hPhi->Fill(phi[t]); 
+    			hPhi->Fill(phi[t]); 
 		}
 
+		// In the end of each event loop
 		tree->Fill();
   		trackArray->Clear(); // reset the array but do not delete memory
   	}
-
-	// After all the generation is done, write and close.
+	
+// After all the generation is done, write and close.
   	file->Write();
   	file->Close();
+
+	cout << "Root file created." << endl;
   
 // Set ROOT drawing styles
 	gStyle->SetOptStat(1111);
@@ -76,9 +86,7 @@ void rootfuncgenerate(Int_t nEvents, Double_t sigmaTracks, Double_t sigmaV2) {
 	hPhi->SetMinimum(0);
 	hPhi->Draw();
   
-// Generating a fitting function to the hPhi histogram
-  	TF1* fitFunc = new TF1("fitFunc", "[1]*(2*[0]*cos(2*(x)) + 1)", 0, 2*TMath::Pi());
-  	fitFunc->SetParameter(0, v2);
+// Plotting the fitting function to the hPhi histogram
 	fitFunc->SetParameter(1, 10);
   	fitFunc->SetLineColor(kRed);
   	hPhi->Fit(fitFunc);
