@@ -5,7 +5,7 @@
 
 #include <TMath.h>
 #include <TString.h>
-#include<TComplex.h>
+#include <TComplex.h>
 
 using namespace std;
 
@@ -42,9 +42,9 @@ void analyze_v2_2particle() {
 		Double_t phi[nTracks]; 
 
 		for(Int_t nt = 0; nt < nTracks; nt++) {
-			file >> trackNo >> colon_string >> phi[nt];
+			file >> trackNo >> colon_string >> phi[nt]; // Fills in created phi[nTracks] array
 			//cout << "In event " << nEvents << " the phi in trackNo " << trackNo << " is " << phi[nt] << endl;
-			hPhi->Fill(phi[nt]);
+			hPhi->Fill(phi[nt]); // Fills in the histogram with phi values
 		}
 
 		// 2-particle standard method (Sec. 2.2)
