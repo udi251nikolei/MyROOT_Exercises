@@ -30,12 +30,12 @@ void analyze_v2_2particle() {
 	Double_t avg_v2_Qvector_allEvents = 0;
 	
 	while(file >> helpString >> eventNo) {
-		// cout << "Reading event: " << eventNo << endl;
+		cout << "Reading event: " << eventNo << endl; // Check to see if all event number were printed and analysed properly
 		nEvents++;
 
 		Int_t nTracks = -1;
 		file >> helpString >> nTracks;
-		// cout << "Event contains " << nTracks << " tracks" << endl;
+		cout << "Event contains " << nTracks << " tracks" << endl; // Check to see if all Track number were printed and analysed properly
 
 		Int_t trackNo;
 		string colon_string;
